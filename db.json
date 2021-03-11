@@ -1,0 +1,104 @@
+{
+  "people": [
+    {
+      "id": 1,
+      "name": "Greg Huels",
+      "isFavorite": false
+    },
+    {
+      "id": 2,
+      "name": "Jay Powlowski",
+      "isFavorite": false
+    },
+    {
+      "id": 3,
+      "name": "Lynn Bergnaum",
+      "isFavorite": false
+    },
+    {
+      "id": 4,
+      "name": "Luz Kuhlman",
+      "isFavorite": false
+    },
+    {
+      "id": 5,
+      "name": "Oliver Walsh",
+      "isFavorite": false
+    },
+    {
+      "id": 6,
+      "name": "Alexandra Quitzon",
+      "isFavorite": false
+    },
+    {
+      "id": 7,
+      "name": "Fred Swift",
+      "isFavorite": false
+    },
+    {
+      "id": 8,
+      "name": "Jimmy Prohaska",
+      "isFavorite": false
+    },
+    {
+      "id": 9,
+      "name": "Pauline Hodkiewicz",
+      "isFavorite": false
+    },
+    {
+      "id": 10,
+      "name": "Myron Sporer",
+      "isFavorite": false
+    },
+    {
+      "id": 11,
+      "name": "Herbert Monahan",
+      "isFavorite": false
+    },
+    {
+      "id": 12,
+      "name": "Casey Towne",
+      "isFavorite": false
+    },
+    {
+      "id": 13,
+      "name": "Ora Wiegand",
+      "isFavorite": false
+    },
+    {
+      "id": 14,
+      "name": "Dr. Alvin Sawayn",
+      "isFavorite": false
+    },
+    {
+      "id": 15,
+      "name": "Jamie Ziemann",
+      "isFavorite": false
+    },
+    {
+      "id": 16,
+      "name": "Tabitha Connelly Jr.",
+      "isFavorite": false
+    },
+    {
+      "id": 17,
+      "name": "Timmy Grady III",
+      "isFavorite": false
+    },
+    {
+      "id": 18,
+      "name": "Salvador Ward",
+      "isFavorite": false
+    },
+    {
+      "id": 19,
+      "name": "Juana Wunsch",
+      "isFavorite": false
+    },
+    {
+      "id": 20,
+      "name": "Christina Daugherty",
+      "isFavorite": false
+    }
+  ]
+}
