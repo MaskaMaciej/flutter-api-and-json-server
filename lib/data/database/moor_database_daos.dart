@@ -2,6 +2,7 @@ part of 'moor_database.dart';
 
 @UseDao(tables: [Users])
 class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
+  //TODO: Dont create redundant properties.
   final AppDatabase db;
 
   UserDao(this.db) : super(db);

@@ -13,6 +13,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HomeBloc>(
+      //TODO: Do you know what lazy does? Remove it or tell me why this is required.
       lazy: false,
       create: (context) =>
           HomeBloc(apiService: apiService, databaseService: databaseService)
