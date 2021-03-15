@@ -9,12 +9,14 @@ import 'package:api_and_json_server/screens/form/form_screen.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class HomeView extends StatelessWidget {
+  //TODO: Methods which returns widgets should NEVER be longer then 70-80 lines, here you have 100 lines, please split this to some separate widgets
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
       if (state is HomeLoadingState) {
         return LoadingScreen();
       } else if (state is HomeLoadedState) {
+        //TODO: You were supposed to remove this scaffolds.
         return Scaffold(
           appBar: AppBar(
             title: Text('API and JSON server'),
@@ -23,6 +25,7 @@ class HomeView extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.search),
                 onPressed: () async {
+                  //TODO: Pick full users from db, do not pass state.users here.
                   var id = await showSearch(
                     context: context,
                     delegate: DataSearch(users: state.users),
@@ -114,6 +117,7 @@ class UsersList extends StatelessWidget {
     }
   }
 
+  //TODO: Methods which returns widgets should NEVER be longer then 70-80 lines, here you have 100 lines, please split this to some separate widgets
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
@@ -157,6 +161,7 @@ class UsersList extends StatelessWidget {
                                 child: Text('Yes'),
                                 onPressed: () {
                                   Navigator.of(context).pop(true);
+                                  //TODO: You should just run deletion event here, you dont need this 'flag' and if awaited after dialog disposal.
                                 }),
                             ElevatedButton(
                                 style: ButtonStyle(
@@ -175,6 +180,7 @@ class UsersList extends StatelessWidget {
                     context
                         .read<HomeBloc>()
                         .add(HomeDeleteUserEvent(id: users[i].id));
+                    //TODO: Double refresh?
                     context.read<HomeBloc>().add(HomeRefreshDataEvent());
                   }
                 }),

@@ -9,6 +9,7 @@ part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
+  //TODO: Services should not be inited in contructors, just create them in mapEventToState if needed
   ApiInterface apiService;
   DatabaseInterface databaseService;
 
@@ -18,8 +19,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if (event is HomeFetchDataEvent) {
+      //TODO: You should yield LoadingState here in case of long api response or low spec device (slow db).
+      //TODO: Handle api error here, fallback to database
       yield HomeLoadedState(users: await apiService.fetchData());
     } else if (event is HomeRefreshDataEvent) {
+      //TODO: You should yield LoadingState here in case of long api response or low spec device (slow db).
+      //TODO: Split this to separate method, now this if else spaghetti code is super ugly.
+      //TODO: Use switch on enum values
+      //TODO: Switch case only assigning to temp users field, then yield state only once after switch case statements.
       if (event.filter == RefreshEnum.favorites) {
         yield HomeLoadedState(users: await databaseService.getFavoriteUsers());
       } else if (event.filter == RefreshEnum.notFavorites) {

@@ -5,8 +5,9 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //TODO: You were supposed to remove this scaffolds.
     return Scaffold(
-          body: Center(
+      body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           CircularProgressIndicator(),
           SizedBox(
