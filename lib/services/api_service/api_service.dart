@@ -7,25 +7,21 @@ import 'package:flutter/foundation.dart';
 import '../../app.dart';
 
 class ApiService extends ApiInterface {
-  final String url = 'http://localhost:3000/people';
+  // final String url = 'http://localhost:3000/people';
+  final String url = 'https://maciej-maska-93.loca.lt/people';
   Dio dio = Dio();
 
   @override
-  // ignore: missing_return
-  //TODO: It should actually rethrow error (please never silence errors expect its totally required)
-  //TODO: Remove try catch from here and handle error in method's caller.
   Future<List<User>> fetchData() async {
-    try {
-      Response response = await dio.get(url);
-      final List<Person> persons = (response.data as List<dynamic>)
-          .map((e) => Person.fromJson(e as Map<String, dynamic>))
-          .toList();
-      List<User> users = persons.map((user) => user.toEntity()).toList();
+    Response response = await dio.get(url);
+    final List<Person> persons = (response.data as List<dynamic>)
+        .map((e) => Person.fromJson(e as Map<String, dynamic>))
+        .toList();
+    List<User> users = persons.map((user) => user.toEntity()).toList();
 
-      App.appDatabase.userDao.insertAll(users);
+    App.appDatabase.userDao.insertAll(users);
 
-      return users;
-    } catch (e) {}
+    return users;
   }
 
   @override

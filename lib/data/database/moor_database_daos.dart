@@ -2,10 +2,7 @@ part of 'moor_database.dart';
 
 @UseDao(tables: [Users])
 class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
-  //TODO: Dont create redundant properties.
-  final AppDatabase db;
-
-  UserDao(this.db) : super(db);
+  UserDao(AppDatabase attachedDatabase) : super(attachedDatabase);
 
   Future<List<User>> getAllUsers() => select(users).get();
 
@@ -27,7 +24,7 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
   Stream<List<User>> watchAllUsers() => select(users).watch();
 
   Future insertUser(int id, String name) =>
-      into(users).insert(UsersCompanion.insert(id: id, name: name));
+      into(users).insert(UsersCompanion.insert(id: Value(id), name: name));
 
   Future insertAll(List<User> user) async {
     await batch((batch) {
@@ -35,7 +32,7 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
           users,
           user
               .map((user) => UsersCompanion.insert(
-                  id: user.id,
+                  id: Value(user.id),
                   name: user.name,
                   isFavorite: Value(user.isFavorite)))
               .toList(),

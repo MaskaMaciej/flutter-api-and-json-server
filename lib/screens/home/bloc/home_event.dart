@@ -8,11 +8,11 @@ class HomeFetchDataEvent extends HomeEvent {
   const HomeFetchDataEvent();
 }
 
-enum RefreshEnum { alphabetical, favorites, notFavorites }
+enum RefreshEnum { all, alphabetical, favorites, notFavorites }
 
 class HomeRefreshDataEvent extends HomeEvent {
   final RefreshEnum filter;
-  const HomeRefreshDataEvent({this.filter});
+  const HomeRefreshDataEvent({@required this.filter});
 }
 
 class HomeGetSingleUserEvent extends HomeEvent {

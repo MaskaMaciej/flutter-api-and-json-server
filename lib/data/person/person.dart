@@ -1,5 +1,6 @@
 import 'package:api_and_json_server/data/database/moor_database.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 part 'person.g.dart';
 
 @JsonSerializable()

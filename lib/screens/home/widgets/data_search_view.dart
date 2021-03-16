@@ -1,10 +1,15 @@
+import 'package:api_and_json_server/core/service_locator.dart';
 import 'package:api_and_json_server/data/database/moor_database.dart';
+import 'package:api_and_json_server/screens/home/bloc/home_bloc.dart';
+import 'package:api_and_json_server/screens/home/widgets/error_screen.dart';
+import 'package:api_and_json_server/screens/home/widgets/loading_screen.dart';
+import 'package:api_and_json_server/services/database_service/database_interface.dart';
 import 'package:flutter/material.dart';
 
 class DataSearch extends SearchDelegate {
-  final List<User> users;
+  final HomeBloc bloc;
 
-  DataSearch({@required this.users});
+  DataSearch({@required this.bloc});
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -26,48 +31,70 @@ class DataSearch extends SearchDelegate {
         progress: transitionAnimation,
       ),
       onPressed: () {
+        bloc.add(HomeRefreshDataEvent(filter: RefreshEnum.all));
         close(context, null);
       },
     );
   }
 
   @override
-  Widget buildResults(BuildContext context) {}
+  Widget buildResults(BuildContext context) {
+    close(context, null);
+    return LoadingScreen();
+  }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    // in following searches list contains only last found user
-    // TODO: bug
-    final List<String> usersNames =
-        users.map((user) => user.name.toUpperCase()).toList();
-    List<String> suggestionList = query.isEmpty
-        ? usersNames
-        : usersNames.where((q) => q.startsWith(query.toUpperCase())).toList();
-
-    return ListView.separated(
-      itemCount: suggestionList == null ? 0 : suggestionList.length,
-      separatorBuilder: (context, i) => Divider(),
-      itemBuilder: (context, i) => ListTile(
-        onTap: () {
-          close(context, users[i].id);
-        },
-        leading: Icon(Icons.person),
-        title: RichText(
-          text: TextSpan(
-            text: suggestionList[i].substring(0, query.length),
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-            children: [
-              TextSpan(
-                text: suggestionList[i].substring(query.length),
-                style: TextStyle(color: Colors.grey),
+    return FutureBuilder(
+      future: fetchUsers(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<User> users = snapshot.data;
+          List<String> usersNames =
+              users.map((user) => user.name.toUpperCase()).toList();
+          List<String> suggestionList = query.isEmpty
+              ? usersNames
+              : usersNames
+                  .where((q) => q.startsWith(query.toUpperCase()))
+                  .toList();
+          return ListView.separated(
+            itemCount: suggestionList == null ? 0 : suggestionList.length,
+            separatorBuilder: (context, i) => Divider(),
+            itemBuilder: (context, i) => ListTile(
+              onTap: () {
+                bloc.add(HomeGetSingleUserEvent(id: users[i].id));
+                close(context, null);
+              },
+              leading: Icon(Icons.person),
+              title: RichText(
+                text: TextSpan(
+                  text: suggestionList[i].substring(0, query.length),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: suggestionList[i].substring(query.length),
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return ErrorScreen(
+            error: snapshot.error.toString(),
+          );
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
+          return LoadingScreen();
+        }
+      },
     );
+  }
+
+  Future<List<User>> fetchUsers() async {
+    return await locator.get<DatabaseInterface>().getAllUsers();
   }
 }

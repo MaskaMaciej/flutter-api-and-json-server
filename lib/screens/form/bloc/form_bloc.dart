@@ -1,3 +1,4 @@
+import 'package:api_and_json_server/core/service_locator.dart';
 import 'package:api_and_json_server/services/api_service/api_interface.dart';
 import 'package:api_and_json_server/services/database_service/database_interface.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,10 @@ part 'form_event.dart';
 part 'form_state.dart';
 
 class FormBloc extends Bloc<FormEvent, FormPageState> {
-  final ApiInterface apiService;
-  final DatabaseInterface databaseService;
+  final apiService = locator.get<ApiInterface>();
+  final databaseService = locator.get<DatabaseInterface>();
 
-  FormBloc({@required this.apiService, @required this.databaseService})
-      : super(FormEditState());
+  FormBloc() : super(FormEditState());
 
   @override
   Stream<FormPageState> mapEventToState(FormEvent event) async* {
