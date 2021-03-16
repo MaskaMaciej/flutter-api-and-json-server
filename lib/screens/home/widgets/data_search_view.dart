@@ -5,12 +5,9 @@ import 'package:api_and_json_server/screens/home/widgets/error_screen.dart';
 import 'package:api_and_json_server/screens/home/widgets/loading_screen.dart';
 import 'package:api_and_json_server/services/database_service/database_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DataSearch extends SearchDelegate {
-  final HomeBloc bloc;
-
-  DataSearch({@required this.bloc});
-
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -31,7 +28,7 @@ class DataSearch extends SearchDelegate {
         progress: transitionAnimation,
       ),
       onPressed: () {
-        bloc.add(HomeRefreshDataEvent(filter: RefreshEnum.all));
+        BlocProvider.of<HomeBloc>(context).add(HomeRefreshDataEvent(filter: RefreshEnum.all));
         close(context, null);
       },
     );
@@ -47,6 +44,7 @@ class DataSearch extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     return FutureBuilder(
       future: fetchUsers(),
+      // ignore: missing_return
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           List<User> users = snapshot.data;
@@ -62,7 +60,7 @@ class DataSearch extends SearchDelegate {
             separatorBuilder: (context, i) => Divider(),
             itemBuilder: (context, i) => ListTile(
               onTap: () {
-                bloc.add(HomeGetSingleUserEvent(id: users[i].id));
+                BlocProvider.of<HomeBloc>(context).add(HomeGetSingleUserEvent(id: users[i].id));
                 close(context, null);
               },
               leading: Icon(Icons.person),

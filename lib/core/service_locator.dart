@@ -9,6 +9,4 @@ final GetIt locator = GetIt.instance;
 void setupLocator() {
   locator.registerFactory<ApiInterface>(() => ApiService());
   locator.registerFactory<DatabaseInterface>(() => DatabaseService());
-  // locator.registerSingleton(DatabaseService());
-  // locator.registerSingleton(ApiService());
 }

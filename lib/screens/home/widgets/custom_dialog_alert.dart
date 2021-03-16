@@ -1,11 +1,11 @@
 import 'package:api_and_json_server/screens/home/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CustomDialogAlert extends StatelessWidget {
-  final HomeBloc bloc;
   final int userId;
 
-  const CustomDialogAlert({@required this.bloc, @required this.userId});
+  const CustomDialogAlert({@required this.userId});
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -26,7 +26,7 @@ class CustomDialogAlert extends StatelessWidget {
             child: Text('Yes'),
             onPressed: () {
               Navigator.of(context).pop();
-              bloc.add(HomeDeleteUserEvent(id: userId));
+              BlocProvider.of<HomeBloc>(context).add(HomeDeleteUserEvent(id: userId));
             }),
       ],
     );

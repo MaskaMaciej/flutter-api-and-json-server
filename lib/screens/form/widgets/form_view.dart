@@ -48,8 +48,6 @@ class _FormViewState extends State<FormView> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: close_sinks
-    final FormBloc formBloc = BlocProvider.of<FormBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.name == null ? "Enter new name" : "Update name"),
@@ -93,12 +91,16 @@ class _FormViewState extends State<FormView> {
                           ? () async {
                               if (_formKey.currentState.validate()) {
                                 widget.id == null
-                                    ? formBloc.add(FormInsertUserEvent(
-                                        id: state.id,
-                                        name: _nameTextController.value.text))
-                                    : formBloc.add(FormUpdateNameEvent(
-                                        id: widget.id,
-                                        name: _nameTextController.value.text));
+                                    ? BlocProvider.of<FormBloc>(context).add(
+                                        FormInsertUserEvent(
+                                            id: state.id,
+                                            name:
+                                                _nameTextController.value.text))
+                                    : BlocProvider.of<FormBloc>(context).add(
+                                        FormUpdateNameEvent(
+                                            id: widget.id,
+                                            name: _nameTextController
+                                                .value.text));
                                 Navigator.of(context).pop();
                                 setState(() {
                                   _nameTextController.clear();

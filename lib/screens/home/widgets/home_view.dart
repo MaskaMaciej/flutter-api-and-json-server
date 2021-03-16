@@ -13,8 +13,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // ignore: close_sinks
-    final HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('API and JSON server'),
@@ -25,11 +23,11 @@ class HomeView extends StatelessWidget {
             onPressed: () async {
               await showSearch(
                 context: context,
-                delegate: DataSearch(bloc: homeBloc),
+                delegate: DataSearch(),
               );
             },
           ),
-          CustomPopupMenuButton(bloc: homeBloc),
+          CustomPopupMenuButton(),
         ],
       ),
       body: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
@@ -38,7 +36,8 @@ class HomeView extends StatelessWidget {
         } else if (state is HomeLoadedState) {
           return RefreshIndicator(
             onRefresh: () async {
-              homeBloc.add(HomeRefreshDataEvent(filter: RefreshEnum.all));
+              BlocProvider.of<HomeBloc>(context)
+                  .add(HomeRefreshDataEvent(filter: RefreshEnum.all));
             },
             child: UsersList(users: state.users),
           );
@@ -55,7 +54,8 @@ class HomeView extends StatelessWidget {
               .push(MaterialPageRoute(builder: (context) {
             return FormScreen();
           }));
-          homeBloc.add(HomeRefreshDataEvent(filter: RefreshEnum.all));
+          BlocProvider.of<HomeBloc>(context)
+              .add(HomeRefreshDataEvent(filter: RefreshEnum.all));
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -80,8 +80,6 @@ class UsersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: close_sinks
-    final homeBloc = BlocProvider.of<HomeBloc>(context);
     return ListView.separated(
       itemCount: users == null ? 0 : users.length,
       separatorBuilder: (context, i) => Divider(),
@@ -101,7 +99,8 @@ class UsersList extends StatelessWidget {
                   return FormScreen(id: users[i].id, name: users[i].name);
                 }));
                 // context.read<HomeBloc>().add(HomeRefreshDataEvent());
-                homeBloc.add(HomeRefreshDataEvent(filter: RefreshEnum.all));
+                BlocProvider.of<HomeBloc>(context)
+                    .add(HomeRefreshDataEvent(filter: RefreshEnum.all));
               },
             ),
             IconSlideAction(
@@ -112,8 +111,7 @@ class UsersList extends StatelessWidget {
                   await showDialog(
                       context: context,
                       builder: (context) {
-                        return CustomDialogAlert(
-                            bloc: homeBloc, userId: users[i].id);
+                        return CustomDialogAlert(userId: users[i].id);
                       });
                 }),
           ],
@@ -130,7 +128,7 @@ class UsersList extends StatelessWidget {
                       : const Icon(Icons.favorite_border),
                   color: users[i].isFavorite ? Colors.red : null,
                   onPressed: () {
-                    homeBloc.add(
+                    BlocProvider.of<HomeBloc>(context).add(
                       HomeUpdateIsFavoriteEvent(
                           id: users[i].id, isFavorite: !users[i].isFavorite),
                     );

@@ -11,9 +11,6 @@ part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final apiService = locator.get<ApiInterface>();
-  final databaseService = locator.get<DatabaseInterface>();
-
   HomeBloc() : super(HomeLoadingState());
 
   @override
@@ -21,8 +18,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (event is HomeFetchDataEvent) {
       yield HomeLoadingState();
       try {
+        final apiService = locator.get<ApiInterface>();
         yield HomeLoadedState(users: await apiService.fetchData());
       } on DioError {
+        final databaseService = locator.get<DatabaseInterface>();
         yield HomeLoadedState(users: await databaseService.getAllUsers());
         rethrow;
       } catch (e) {
@@ -33,13 +32,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       var filter = _mapEnumToState(event.filter);
       yield HomeLoadedState(users: await filter());
     } else if (event is HomeGetSingleUserEvent) {
+      final databaseService = locator.get<DatabaseInterface>();
       yield HomeLoadedState(
           users: await databaseService.getSingleUser(id: event.id));
     } else if (event is HomeDeleteUserEvent) {
+      final apiService = locator.get<ApiInterface>();
+      final databaseService = locator.get<DatabaseInterface>();
       await databaseService.deleteUser(id: event.id);
       yield HomeLoadedState(users: await databaseService.getAllUsers());
       apiService.deleteUser(id: event.id);
     } else if (event is HomeUpdateIsFavoriteEvent) {
+      final apiService = locator.get<ApiInterface>();
+      final databaseService = locator.get<DatabaseInterface>();
       await databaseService.updateIsFavorite(
           id: event.id, isFavorite: event.isFavorite);
       yield HomeLoadedState(users: await databaseService.getAllUsers());
@@ -48,7 +52,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   dynamic _mapEnumToState(expression) {
-    // ignore: unused_local_variable
+    final databaseService = locator.get<DatabaseInterface>();
     var filter;
     switch (expression) {
       case RefreshEnum.all:
