@@ -28,7 +28,8 @@ class DataSearch extends SearchDelegate {
         progress: transitionAnimation,
       ),
       onPressed: () {
-        BlocProvider.of<HomeBloc>(context).add(HomeRefreshDataEvent(filter: RefreshEnum.all));
+        BlocProvider.of<HomeBloc>(context)
+            .add(HomeRefreshDataEvent(filter: RefreshEnum.all));
         close(context, null);
       },
     );
@@ -43,7 +44,7 @@ class DataSearch extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     return FutureBuilder(
-      future: fetchUsers(),
+      future: locator.get<DatabaseInterface>().getAllUsers(),
       // ignore: missing_return
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -60,7 +61,8 @@ class DataSearch extends SearchDelegate {
             separatorBuilder: (context, i) => Divider(),
             itemBuilder: (context, i) => ListTile(
               onTap: () {
-                BlocProvider.of<HomeBloc>(context).add(HomeGetSingleUserEvent(id: users[i].id));
+                BlocProvider.of<HomeBloc>(context)
+                    .add(HomeGetSingleUserEvent(id: users[i].id));
                 close(context, null);
               },
               leading: Icon(Icons.person),
@@ -90,9 +92,5 @@ class DataSearch extends SearchDelegate {
         }
       },
     );
-  }
-
-  Future<List<User>> fetchUsers() async {
-    return await locator.get<DatabaseInterface>().getAllUsers();
   }
 }
