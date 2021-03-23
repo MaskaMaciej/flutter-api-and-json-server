@@ -1,5 +1,6 @@
-import 'package:api_and_json_server/data/database/moor_database.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../database/moor_database.dart';
 
 part 'person.g.dart';
 
@@ -9,7 +10,7 @@ class Person {
   final String name;
   final bool isFavorite;
 
-  Person({this.id, this.name, this.isFavorite});
+  const Person({required this.id, required this.name, required this.isFavorite});
 
   factory Person.fromJson(Map<String, dynamic> json) => _$PersonFromJson(json);
 

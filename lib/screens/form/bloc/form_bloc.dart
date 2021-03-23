@@ -1,30 +1,44 @@
-import 'package:api_and_json_server/core/service_locator.dart';
-import 'package:api_and_json_server/services/api_service/api_interface.dart';
-import 'package:api_and_json_server/services/database_service/database_interface.dart';
-import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../core/service_locator.dart';
+import '../../../services/api_service/api_interface.dart';
+import '../../../services/database_service/database_interface.dart';
 
 part 'form_event.dart';
 part 'form_state.dart';
 
 class FormBloc extends Bloc<FormEvent, FormPageState> {
-  FormBloc() : super(FormEditState());
+  FormBloc() : super(FormInitialState());
 
   @override
   Stream<FormPageState> mapEventToState(FormEvent event) async* {
-    if (event is FormInsertUserEvent) {
-      final apiService = locator.get<ApiInterface>();
+    if (event is FormInsertOrUpdateUserEvent && event.name != null) {
       final databaseService = locator.get<DatabaseInterface>();
-      int biggestId = await databaseService.biggestId();
-      await databaseService.insertUser(id: biggestId, name: event.name);
-      await databaseService.getAllUsers();
-      apiService.insertUser(id: biggestId, name: event.name);
-    } else if (event is FormUpdateNameEvent) {
       final apiService = locator.get<ApiInterface>();
-      final databaseService = locator.get<DatabaseInterface>();
-      await databaseService.updateName(id: event.id, name: event.name);
-      await databaseService.getAllUsers();
-      apiService.updateName(id: event.id, name: event.name);
+
+      final bool isInsert = event.id == null;
+      final int id = isInsert ? await databaseService.biggestId() : event.id!;
+      final String name = event.name!;
+      if (isInsert) {
+        await databaseService.insertUser(id: id, name: name);
+      } else {
+        await databaseService.updateName(id: id, name: name);
+      }
+      try {
+        if (isInsert) {
+          await apiService.insertUser(id: id, name: name);
+        } else {
+          await apiService.updateName(id: id, name: name);
+        }
+      } on DioError catch (_) {
+        print('API is currently unavailable.');
+      } catch (e) {
+        print(e.toString());
+      }
+      yield FormSuccessState(name: name);
+    } else {
+      yield FormErrorState(error: 'Name cannot be empty.');
     }
   }
 }

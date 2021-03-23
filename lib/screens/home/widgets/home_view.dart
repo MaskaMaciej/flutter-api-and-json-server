@@ -1,14 +1,15 @@
-import 'package:api_and_json_server/data/database/moor_database.dart';
-import 'package:api_and_json_server/screens/home/widgets/custom_dialog_alert.dart';
-import 'package:api_and_json_server/screens/home/widgets/custom_popup_menu_button.dart';
-import 'package:api_and_json_server/screens/home/widgets/data_search_view.dart';
-import 'package:api_and_json_server/screens/home/widgets/error_screen.dart';
-import 'package:api_and_json_server/screens/home/widgets/loading_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:api_and_json_server/screens/home/bloc/home_bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:api_and_json_server/screens/form/form_screen.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../data/database/moor_database.dart';
+import '../../home/bloc/home_bloc.dart';
+import '../../form/form_screen.dart';
+import 'custom_dialog_alert.dart';
+import 'custom_popup_menu_button.dart';
+import 'data_search_view.dart';
+import 'error_screen.dart';
+import 'loading_screen.dart';
 
 class HomeView extends StatelessWidget {
   @override
@@ -21,10 +22,15 @@ class HomeView extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () async {
-              await showSearch(
+              int id = await showSearch(
                 context: context,
                 delegate: DataSearch(),
               );
+              id == 0
+                  ? BlocProvider.of<HomeBloc>(context)
+                      .add(HomeRefreshDataEvent(filter: RefreshEnum.all))
+                  : BlocProvider.of<HomeBloc>(context)
+                      .add(HomeGetSingleUserEvent(id: id));
             },
           ),
           CustomPopupMenuButton(),
@@ -50,12 +56,14 @@ class HomeView extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () async {
-          await Navigator.of(context)
+          final String name = await Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) {
             return FormScreen();
           }));
           BlocProvider.of<HomeBloc>(context)
               .add(HomeRefreshDataEvent(filter: RefreshEnum.all));
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('User $name has been added.')));
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -66,11 +74,11 @@ class HomeView extends StatelessWidget {
 class UsersList extends StatelessWidget {
   final List<User> users;
 
-  const UsersList({@required this.users});
+  const UsersList({required this.users});
 
-  String initialsFromName(String name) {
+  String initialsFromName(String? name) {
     if (name == null) return 'N';
-    final splotName = name.toUpperCase().split(' ') ?? '$name'.split(' ');
+    final splotName = '$name'.toUpperCase().split(' ');
     if (splotName.length > 1) {
       return '${splotName[0][0]}${splotName[1][0]}';
     } else {
@@ -81,11 +89,11 @@ class UsersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemCount: users == null ? 0 : users.length,
+      itemCount: users.length == 0 ? 0 : users.length,
       separatorBuilder: (context, i) => Divider(),
       itemBuilder: (context, i) {
         return Slidable(
-          actionPane: SlidableDrawerActionPane(),
+          actionPane: SlidableScrollActionPane(),
           actionExtentRatio: 0.2,
           closeOnScroll: true,
           secondaryActions: <Widget>[
@@ -108,11 +116,15 @@ class UsersList extends StatelessWidget {
                 color: Colors.red,
                 icon: Icons.delete_forever,
                 onTap: () async {
-                  await showDialog(
+                  bool delete = await showDialog(
                       context: context,
                       builder: (context) {
-                        return CustomDialogAlert(userId: users[i].id);
+                        return CustomDialogAlert();
                       });
+                  if (delete == true) {
+                    BlocProvider.of<HomeBloc>(context)
+                        .add(HomeDeleteUserEvent(id: users[i].id));
+                  }
                 }),
           ],
           child: ListTile(

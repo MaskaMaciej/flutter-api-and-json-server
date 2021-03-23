@@ -1,7 +1,8 @@
-import 'package:api_and_json_server/screens/home/bloc/home_bloc.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../screens/home/bloc/home_bloc.dart';
 
 class CustomPopupMenuButton extends StatelessWidget {
   @override
@@ -12,7 +13,8 @@ class CustomPopupMenuButton extends StatelessWidget {
           child: ElevatedButton(
             child: const Text('Show all'),
             onPressed: () {
-              BlocProvider.of<HomeBloc>(context).add(HomeRefreshDataEvent(filter: RefreshEnum.all));
+              BlocProvider.of<HomeBloc>(context)
+                  .add(HomeRefreshDataEvent(filter: RefreshEnum.all));
             },
           ),
         ),
@@ -20,7 +22,8 @@ class CustomPopupMenuButton extends StatelessWidget {
           child: ElevatedButton(
             child: const Text('Show alphabetical'),
             onPressed: () {
-              BlocProvider.of<HomeBloc>(context).add(HomeRefreshDataEvent(filter: RefreshEnum.alphabetical));
+              BlocProvider.of<HomeBloc>(context)
+                  .add(HomeRefreshDataEvent(filter: RefreshEnum.alphabetical));
             },
           ),
         ),
@@ -28,7 +31,8 @@ class CustomPopupMenuButton extends StatelessWidget {
           child: ElevatedButton(
             child: const Text('Show favorites'),
             onPressed: () {
-              BlocProvider.of<HomeBloc>(context).add(HomeRefreshDataEvent(filter: RefreshEnum.favorites));
+              BlocProvider.of<HomeBloc>(context)
+                  .add(HomeRefreshDataEvent(filter: RefreshEnum.favorites));
             },
           ),
         ),
@@ -36,7 +40,8 @@ class CustomPopupMenuButton extends StatelessWidget {
           child: ElevatedButton(
             child: const Text('Show not favorites'),
             onPressed: () {
-              BlocProvider.of<HomeBloc>(context).add(HomeRefreshDataEvent(filter: RefreshEnum.notFavorites));
+              BlocProvider.of<HomeBloc>(context)
+                  .add(HomeRefreshDataEvent(filter: RefreshEnum.notFavorites));
             },
           ),
         ),

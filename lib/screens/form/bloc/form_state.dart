@@ -4,15 +4,18 @@ abstract class FormPageState {
   const FormPageState();
 }
 
-class FormEditState extends FormPageState {
-  final int id;
+class FormInitialState extends FormPageState {
+  const FormInitialState();
+}
+
+class FormSuccessState extends FormPageState {
   final String name;
 
-  const FormEditState({this.id, this.name});
+  const FormSuccessState({required this.name});
 }
 
 class FormErrorState extends FormPageState {
   final String error;
 
-  const FormErrorState({@required this.error});
+  const FormErrorState({required this.error});
 }

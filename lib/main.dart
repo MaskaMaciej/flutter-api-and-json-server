@@ -1,5 +1,6 @@
-import 'package:api_and_json_server/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
+
+import 'screens/home/home_screen.dart';
 import 'core/service_locator.dart';
 
 void main() {

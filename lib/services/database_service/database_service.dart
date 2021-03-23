@@ -1,14 +1,13 @@
-import 'package:api_and_json_server/data/database/moor_database.dart';
-import 'package:api_and_json_server/services/database_service/database_interface.dart';
-import 'package:flutter/foundation.dart';
+import '../../data/database/moor_database.dart';
 import '../../app.dart';
+import 'database_interface.dart';
 
 class DatabaseService extends DatabaseInterface {
   Future<List<User>> getAllUsers() {
     return App.appDatabase.userDao.getAllUsers();
   }
 
-  Future<List<User>> getSingleUser({@required int id}) async {
+  Future<List<User>> getSingleUser({required int id}) async {
     return App.appDatabase.userDao.getSingleUser(id);
   }
 
@@ -28,26 +27,26 @@ class DatabaseService extends DatabaseInterface {
     return App.appDatabase.userDao.watchAllUsers();
   }
 
-  Future<void> insertUser({@required int id, @required String name}) async {
+  Future<void> insertUser({required int id, required String name}) async {
     await App.appDatabase.userDao.insertUser(id, name);
   }
 
-  Future<void> deleteUser({@required int id}) async {
+  Future<void> deleteUser({required int id}) async {
     await App.appDatabase.userDao.deleteUser(id);
   }
 
-  Future<void> updateName({@required int id, @required String name}) async {
+  Future<void> updateName({required int id, required String name}) async {
     await App.appDatabase.userDao.updateName(id, name);
   }
 
   Future<void> updateIsFavorite(
-      {@required int id, @required bool isFavorite}) async {
+      {required int id, required bool isFavorite}) async {
     await App.appDatabase.userDao.updateIsFavorite(id, isFavorite);
   }
 
   Future<int> biggestId() async {
     try {
-      return await App.appDatabase.userDao.biggestId() + 1;
+      return (await App.appDatabase.userDao.biggestId()) + 1;
     } catch (e) {
       return 1;
     }

@@ -11,11 +11,11 @@ class HomeLoadingState extends HomeState {
 class HomeLoadedState extends HomeState {
   final List<User> users;
 
-  const HomeLoadedState({@required this.users});
+  const HomeLoadedState({required this.users});
 }
 
 class HomeErrorState extends HomeState {
   final String error;
 
-  const HomeErrorState({@required this.error});
+  const HomeErrorState({required this.error});
 }

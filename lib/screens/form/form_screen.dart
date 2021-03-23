@@ -1,11 +1,12 @@
-import 'package:api_and_json_server/screens/form/widgets/form_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:api_and_json_server/screens/form/bloc/form_bloc.dart';
+
+import 'widgets/form_view.dart';
+import 'bloc/form_bloc.dart';
 
 class FormScreen extends StatelessWidget {
-  final int id;
-  final String name;
+  final int? id;
+  final String? name;
 
   FormScreen({this.id, this.name});
 

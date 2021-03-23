@@ -1,11 +1,12 @@
-import 'package:api_and_json_server/screens/home/widgets/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:api_and_json_server/screens/form/bloc/form_bloc.dart';
+
+import '../../home/widgets/error_screen.dart';
+import '../bloc/form_bloc.dart';
 
 class FormView extends StatefulWidget {
-  final int id;
-  final String name;
+  final int? id;
+  final String? name;
 
   FormView({this.id, this.name});
 
@@ -17,7 +18,7 @@ class _FormViewState extends State<FormView> {
   static final RegExp _lettersOnly =
       RegExp(r'^([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+\s)*[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$');
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _nameTextController;
+  late TextEditingController _nameTextController;
   double _formProgress = 0;
 
   @override
@@ -52,11 +53,15 @@ class _FormViewState extends State<FormView> {
       appBar: AppBar(
         title: Text(widget.name == null ? "Enter new name" : "Update name"),
       ),
-      body: BlocBuilder<FormBloc, FormPageState>(
+      body: BlocConsumer<FormBloc, FormPageState>(
+        listener: (context, state) {
+          Navigator.of(context).pop((state as FormSuccessState).name);
+        },
+        listenWhen: (previous, current) => current is FormSuccessState,
         builder: (context, state) {
           if (state is FormErrorState) {
             return ErrorScreen(error: state.error.toString());
-          } else if (state is FormEditState) {
+          } else if (state is FormInitialState) {
             return Form(
               key: _formKey,
               onChanged: _updateFormProgress,
@@ -72,7 +77,7 @@ class _FormViewState extends State<FormView> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
                         validator: (value) {
-                          if (!_lettersOnly.hasMatch(value)) {
+                          if (!_lettersOnly.hasMatch(value!)) {
                             return 'New name must only contains letters.';
                           }
                           return null;
@@ -87,24 +92,14 @@ class _FormViewState extends State<FormView> {
                       child: Text(widget.name == null
                           ? "Enter new name"
                           : "Update name"),
-                      onPressed: _nameTextController.value.text.length > 2
-                          ? () async {
-                              if (_formKey.currentState.validate()) {
-                                widget.id == null
-                                    ? BlocProvider.of<FormBloc>(context).add(
-                                        FormInsertUserEvent(
-                                            id: state.id,
-                                            name:
-                                                _nameTextController.value.text))
-                                    : BlocProvider.of<FormBloc>(context).add(
-                                        FormUpdateNameEvent(
-                                            id: widget.id,
-                                            name: _nameTextController
-                                                .value.text));
-                                Navigator.of(context).pop();
-                                setState(() {
-                                  _nameTextController.clear();
-                                });
+                      onPressed: _nameTextController.value.text.length > 2 &&
+                              _nameTextController.value.text != widget.name
+                          ? () {
+                              if (_formKey.currentState!.validate()) {
+                                context.read<FormBloc>().add(
+                                    FormInsertOrUpdateUserEvent(
+                                        id: widget.id,
+                                        name: _nameTextController.value.text));
                               }
                             }
                           : null,

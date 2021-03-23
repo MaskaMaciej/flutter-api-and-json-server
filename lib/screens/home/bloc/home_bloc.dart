@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:api_and_json_server/core/service_locator.dart';
-import 'package:api_and_json_server/data/database/moor_database.dart';
-import 'package:api_and_json_server/services/api_service/api_interface.dart';
-import 'package:api_and_json_server/services/database_service/database_interface.dart';
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
 import 'package:dio/dio.dart';
+
+import '../../../core/service_locator.dart';
+import '../../../data/database/moor_database.dart';
+import '../../../services/api_service/api_interface.dart';
+import '../../../services/database_service/database_interface.dart';
+import 'package:bloc/bloc.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
@@ -20,51 +20,64 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       try {
         final apiService = locator.get<ApiInterface>();
         yield HomeLoadedState(users: await apiService.fetchData());
-      } on DioError {
+      } on DioError catch (_) {
         final databaseService = locator.get<DatabaseInterface>();
         yield HomeLoadedState(users: await databaseService.getAllUsers());
-        rethrow;
+        print('API is currently unavailable.');
       } catch (e) {
         print(e.toString());
       }
     } else if (event is HomeRefreshDataEvent) {
       yield HomeLoadingState();
-      var filter = _mapEnumToState(event.filter);
+      var filter = _mapEnumToFilterFunction(event.filter);
       yield HomeLoadedState(users: await filter());
     } else if (event is HomeGetSingleUserEvent) {
       final databaseService = locator.get<DatabaseInterface>();
       yield HomeLoadedState(
           users: await databaseService.getSingleUser(id: event.id));
     } else if (event is HomeDeleteUserEvent) {
-      final apiService = locator.get<ApiInterface>();
       final databaseService = locator.get<DatabaseInterface>();
       await databaseService.deleteUser(id: event.id);
       yield HomeLoadedState(users: await databaseService.getAllUsers());
-      apiService.deleteUser(id: event.id);
+      try {
+        final apiService = locator.get<ApiInterface>();
+        await apiService.deleteUser(id: event.id);
+      } on DioError catch (_) {
+        print('API is currently unavailable.');
+      } catch (e) {
+        print(e.toString());
+      }
     } else if (event is HomeUpdateIsFavoriteEvent) {
-      final apiService = locator.get<ApiInterface>();
       final databaseService = locator.get<DatabaseInterface>();
       await databaseService.updateIsFavorite(
           id: event.id, isFavorite: event.isFavorite);
       yield HomeLoadedState(users: await databaseService.getAllUsers());
-      apiService.updateIsFavorite(id: event.id, isFavorite: event.isFavorite);
+      try {
+        final apiService = locator.get<ApiInterface>();
+        await apiService.updateIsFavorite(
+            id: event.id, isFavorite: event.isFavorite);
+      } on DioError catch (_) {
+        print('API is currently unavailable.');
+      } catch (e) {
+        print(e.toString());
+      }
     }
   }
 
-  dynamic _mapEnumToState(expression) {
+  Future<List<User>> Function() _mapEnumToFilterFunction(
+      RefreshEnum enumValue) {
     final databaseService = locator.get<DatabaseInterface>();
-    var filter;
-    switch (expression) {
+    switch (enumValue) {
       case RefreshEnum.all:
-        return filter = databaseService.getAllUsers;
+        return databaseService.getAllUsers;
       case RefreshEnum.alphabetical:
-        return filter = databaseService.getAlphabeticalUsers;
+        return databaseService.getAlphabeticalUsers;
       case RefreshEnum.favorites:
-        return filter = databaseService.getFavoriteUsers;
+        return databaseService.getFavoriteUsers;
       case RefreshEnum.notFavorites:
-        return filter = databaseService.getNotFavoriteUsers;
+        return databaseService.getNotFavoriteUsers;
       default:
-        return filter = databaseService.getAllUsers;
+        return databaseService.getAllUsers;
     }
   }
 }
