@@ -7,7 +7,7 @@ Packages that I used were as follows:
 - JsonSerializable - for building Dart classes from JSON,
 - Moor Flutter - for writing SQLite queries in Dart,
 - Get It - as a service locator for dependency injection,
-- Bloc - for managing state to separate view from business logic.
+- BLoC - for managing state to separate view from business logic.
 
 ## Getting Started
 
