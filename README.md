@@ -1,6 +1,13 @@
 # api_and_json_server
 
-A new Flutter project.
+An application that fetches data from the REST API. 
+Packages that I used were as follows:
+- JSON Server - for fake REST API,
+- Dio - an HTTP client,
+- JsonSerializable - for building Dart classes from JSON handling,
+- Moor Flutter - for writing SQLite queries in Dart,
+- Get It - as a service locator for dependency injection,
+- Bloc - for managing state to separate view from business logic.
 
 ## Getting Started
 
